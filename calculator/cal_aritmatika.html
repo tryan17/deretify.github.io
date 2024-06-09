@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator Aritmatika</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .navbar { padding: 15px; }
+        img { border-radius: 50%; }
+        body { padding: 80px 0 100px; }
+        .container-custom {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+            margin-bottom: 20px;
+            color: #212529;
+        }
+        .error { color: red; margin-top: 5px; }
+        .result-message { color: #212529; margin-top: 5px; }
+        .is-valid, .is-invalid { display: block; margin-top: 0.25rem; }
+        .is-invalid { color: red; }
+        .is-valid { color: green; }
+        #deretChart { width: 100%; height: auto; max-width: 100%; margin: auto; }
+        @media (max-width: 600px) { .container-custom { padding: 15px; } }
+        .search-results {
+            background-color: white; color: black; border-radius: 10px; padding: 10px; display: none;
+            position: absolute; top: 100%; left: 0; width: 100%; max-width: 300px; z-index: 1000;
+        }
+        .search-container { position: relative; display: flex; width: 30%; }
+        .search-container input { flex-grow: 1; }
+        .footer { background-color: #343a40; color: white; padding: 20px 0; text-align: center; position: fixed; width: 100%; bottom: 0; }
+        @media (max-width: 576px) {
+            .search-container { width: 100%; }
+            .carousel-inner img { height: auto; max-height: 300px; }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-dark">
+  <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a href="/index.html"><img src="/images/logo-deretify.png" alt="" style="height: 30px;"></a>
+      <a class="navbar-brand" href="/index.html">DERETIFY</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="/index.html">Home</a></li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="/materi/materi.html" role="button" data-bs-toggle="dropdown">Materi</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/mmateri/materi.html">Deret</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="/materi/aritmatika.html">Aritmatika</a></li>
+              <li><a class="dropdown-item" href="/materi/geometri.html">Geometri</a></li>
+            </ul>
+          </li>
+          <li class="nav-item"><a class="nav-link" href="/video/video.html">Video</a></li>
+          <li class="nav-item"><a class="nav-link" href="/questions-bank/questions.html">Questions Bank</a></li>
+          <li class="nav-item"><a class="nav-link" href="/quiz/quiz.html">Quiz</a></li>
+          <li class="nav-item dropdown">
+            <a class="nav-link active dropdown-toggle" href="/calculator/carapenggunaan.html" role="button" data-bs-toggle="dropdown">Calculator</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/calculator/carapenggunaan.html">Cara Penggunaan</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="/calculator/cal_aritmatika.html">Aritmatika</a></li>
+              <li><a class="dropdown-item" href="/calculator/cal_geometri.html">Geometri</a></li>
+            </ul>
+          </li>
+          <li class="nav-item"><a class="nav-link" href="/about-us/about.html">About us</a></li>
+        </ul>
+        <div class="search-container">
+          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" id="search-input" onkeyup="searchFunction()">
+          <button class="btn btn-outline-light" type="button" onclick="searchFunction()">Search</button>
+          <div id="search-results" class="search-results"></div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-custom">
+    <h3 class="text-center">Deret Aritmatika</h3>
+    <div class="mb-3">
+      <label for="a1_aritmatika" class="form-label">Masukkan nilai suku pertama (a1):</label>
+      <input type="text" class="form-control" id="a1_aritmatika" placeholder="Masukkan nilai a1" required>
+      <div id="a1_error" class="error"></div>
+    </div>
+    <div class="mb-3">
+      <label for="beda_aritmatika" class="form-label">Masukkan beda antar suku (d):</label>
+      <input type="text" class="form-control" id="beda_aritmatika" placeholder="Masukkan nilai d" required>
+      <div id="d_error" class="error"></div>
+    </div>
+    
+    <div class="mb-3">
+      <label for="suku_ke_aritmatika" class="form-label">Masukkan suku ke-n:</label>
+      <input type="text" class="form-control" id="suku_ke_aritmatika" placeholder="Masukkan nilai n" required>
+      <button id="cariSukuBtn" class="btn btn-dark mt-2">Cari Nilai Suku ke-n</button>
+      <div id="n_error" class="error"></div>
+    </div>
+    
+    <div id="nilai_suku_aritmatika" class="result-message mb-3"></div>
+    
+    <div class="mb-3">
+      <label for="jumlah_suku_aritmatika" class="form-label">Masukkan jumlah suku (n):</label>
+      <input type="text" class="form-control" id="jumlah_suku_aritmatika" placeholder="Masukkan jumlah suku" required>
+      <button id="hitungAritmatikaBtn" class="btn btn-dark mt-2">Hitung Deret Aritmatika</button>
+      <div id="hasil_aritmatika" class="result-message"></div>
+      <div id="deret_aritmatika" class="result-message"></div>
+    </div>
+
+    <div class="mb-3">
+      <button id="hitungRataRataBtn" class="btn btn-dark mt-2">Hitung Rata-rata Deret Aritmatika</button>
+      <div id="hasil_rata_rata" class="result-message"></div>
+    </div>
+
+    <div class="mb-3">
+      <button id="saveResultBtn" class="btn btn-dark mt-2">Simpan Hasil</button>
+    </div>
+
+    <div class="mb-3">
+      <button id="resetBtn" class="btn btn-dark mt-2">Reset Form</button>
+    </div>
+
+    <div class="mb-3">
+      <canvas id="deretChart"></canvas>
+    </div>
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+      <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+          <strong class="me-auto">Notification</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          Hasil telah dihitung!
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer class="footer">
+    <div class="container">
+      <span>© 2024 DERETIFY - Team6C | Universitas Siliwangi</span>
+    </div>
+  </footer> 
+  <script>
+    let deretChartInstance;
+
+    function parseInput(input) {
+        input = input.trim().toLowerCase();
+        if (input === '∞' || input === 'infinity') {
+            return Infinity;
+        } else if (input.includes('/')) {
+            let parts = input.split('/');
+            if (parts.length === 2) {
+                let numerator = parseFloat(parts[0]);
+                let denominator = parseFloat(parts[1]);
+                if (!isNaN(numerator) && !isNaN(denominator) && denominator !== 0) {
+                    return numerator / denominator;
+                }
+            }
+        } else if (!isNaN(parseFloat(input))) {
+            return parseFloat(input);
+        }
+        return parseInt(input);
+    }
+
+    function validateInput(input, field, errorField, condition = (val) => true) {
+        const value = parseInput(input.value);
+        if (isNaN(value) || !condition(value)) {
+            errorField.textContent = `Nilai ${field} tidak valid.`;
+            input.classList.add('is-invalid');
+            input.focus();
+            return false;
+        } else {
+            input.classList.remove('is-invalid');
+            input.classList.add('is-valid');
+            return value;
+        }
+    }
+
+    function hitungAritmatika() {
+        clearErrors();
+        const a1 = validateInput(document.getElementById('a1_aritmatika'), 'a1', document.getElementById('a1_error'));
+        const d = validateInput(document.getElementById('beda_aritmatika'), 'd', document.getElementById('d_error'), (val) => val !== 0);
+        const n = validateInput(document.getElementById('jumlah_suku_aritmatika'), 'n', document.getElementById('n_error'));
+
+        if (a1 === false || d === false || n === false) return;
+
+        if (n === Infinity) {
+            document.getElementById('hasil_aritmatika').textContent = "Jumlah deret aritmatika tak hingga.";
+            document.getElementById('deret_aritmatika').textContent = "Deret aritmatika tak hingga.";
+            return;
+        }
+
+        const hasil = (n / 2) * (2 * a1 + (n - 1) * d);
+        document.getElementById('hasil_aritmatika').innerHTML = `Jumlah deret aritmatika: ${hasil}`;
+
+        const deret = Array.from({ length: n }, (_, i) => a1 + i * d);
+        document.getElementById('deret_aritmatika').innerHTML = `Deret aritmatika: ${deret.join(', ')}`;
+
+        showToast("Hasil telah dihitung!");
+        renderChart(deret, `Deret Aritmatika: ${hasil}`);
+    }
+
+    function cariSukuAritmatika() {
+        clearErrors();
+        const a1 = validateInput(document.getElementById('a1_aritmatika'), 'a1', document.getElementById('a1_error'));
+        const d = validateInput(document.getElementById('beda_aritmatika'), 'd', document.getElementById('d_error'), (val) => val !== 0);
+        const n = validateInput(document.getElementById('suku_ke_aritmatika'), 'n', document.getElementById('n_error'));
+
+        if (a1 === false || d === false || n === false) return;
+
+        const suku_n = a1 + (n - 1) * d;
+        document.getElementById('nilai_suku_aritmatika').innerHTML = `Nilai suku ke-${n} adalah: ${suku_n}`;
+        renderChart([suku_n], `Suku ke-${n}: ${suku_n}`);
+    }
+
+    function hitungRataRata() {
+        clearErrors();
+        const a1 = validateInput(document.getElementById('a1_aritmatika'), 'a1', document.getElementById('a1_error'));
+        const d = validateInput(document.getElementById('beda_aritmatika'), 'd', document.getElementById('d_error'), (val) => val !== 0);
+        const n = validateInput(document.getElementById('jumlah_suku_aritmatika'), 'n', document.getElementById('n_error'));
+
+        if (a1 === false || d === false || n === false) return;
+
+        const rataRata = (a1 + (a1 + (n - 1) * d)) / 2;
+        document.getElementById('hasil_rata_rata').textContent = `Rata-rata deret aritmatika: ${rataRata}`;
+
+        showToast("Rata-rata telah dihitung!");
+        renderChart([rataRata], `Rata-rata: ${rataRata}`);
+    }
+
+    function saveResult() {
+        if (!window.JSZip || !window.saveAs) {
+            alert("Gagal memuat library JSZip atau FileSaver.js.");
+            return;
+        }
+
+        const a1 = document.getElementById('a1_aritmatika').value;
+        const d = document.getElementById('beda_aritmatika').value;
+        const n = document.getElementById('jumlah_suku_aritmatika').value;
+
+        const hasil = document.getElementById('hasil_aritmatika').textContent;
+        const deret = document.getElementById('deret_aritmatika').textContent;
+
+        if (!hasil || !deret) {
+            alert("Tidak ada hasil untuk disimpan.");
+            return;
+        }
+
+        const canvas = document.getElementById('deretChart');
+        const chartURL = canvas.toDataURL();
+
+        const textToSave = `
+        Hasil Perhitungan Deret Aritmatika:
+        -------------------------------------
+        Nilai suku pertama (a1): ${a1}
+        Beda antar suku (d): ${d}
+        Jumlah suku (n): ${n}
+        -------------------------------------
+        ${hasil}
+        ${deret}
+        `;
+
+        const zip = new JSZip();
+        zip.file("hasil_deret_aritmatika.txt", textToSave);
+        zip.file("deret_aritmatika.png", chartURL.split(',')[1], { base64: true });
+
+        zip.generateAsync({ type: "blob" }).then(content => {
+            saveAs(content, "hasil_deret_aritmatika.zip");
+        }).catch(error => {
+            alert("Gagal menyimpan hasil: " + error.message);
+        });
+
+        showToast("Hasil telah disimpan!");
+    }
+
+    function resetForm() {
+        document.querySelectorAll('input').forEach(input => input.value = '');
+        clearErrors();
+        if (deretChartInstance) {
+            deretChartInstance.destroy();
+            deretChartInstance = null;
+        }
+        showToast("Formulir telah direset!");
+    }
+
+    function showToast(message) {
+        const toastEl = document.getElementById('notificationToast');
+        const toast = new bootstrap.Toast(toastEl);
+        document.querySelector('#notificationToast .toast-body').textContent = message;
+        toast.show();
+    }
+
+    function renderChart(data, label) {
+        const ctx = document.getElementById('deretChart').getContext('2d');
+        if (deretChartInstance) deretChartInstance.destroy();
+        deretChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Array.from({ length: data.length }, (_, i) => i + 1),
+                datasets: [{
+                    label: label,
+                    data: data,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+
+    function clearErrors() {
+        document.querySelectorAll('.error').forEach(el => el.textContent = '');
+        document.querySelectorAll('.result-message').forEach(el => {
+            el.textContent = '';
+            el.classList.remove('error');
+        });
+        document.querySelectorAll('.form-control').forEach(el => el.classList.remove('is-valid', 'is-invalid'));
+    }
+
+    document.getElementById('cariSukuBtn').addEventListener('click', function (event) {
+        event.preventDefault();
+        cariSukuAritmatika();
+    });
+
+    document.getElementById('hitungAritmatikaBtn').addEventListener('click', function (event) {
+        event.preventDefault();
+        hitungAritmatika();
+    });
+
+    document.getElementById('hitungRataRataBtn').addEventListener('click', function (event) {
+        event.preventDefault();
+        hitungRataRata();
+    });
+
+    document.getElementById('saveResultBtn').addEventListener('click', function (event) {
+        event.preventDefault();
+        saveResult();
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', function (event) {
+        event.preventDefault();
+        resetForm();
+    });
+
+    const searchItems = [
+      { title: 'Home', link: '/index.html' },
+      { title: 'Materi', link: '/materi/materi.html' },
+      { title: 'Deret', link: '/materi/materi.html' },
+      { title: 'Aritmatika', link: '/materi/aritmatika.html' },
+      { title: 'Geometri', link: '/materi/geometri.html' },
+      { title: 'Video Pembelajaran', link: '/video/video.html' },
+      { title: 'Questions Bank', link: '/questions-bank/questions.html' },
+      { title: 'Quiz', link: '/quiz/quiz.html' },
+      { title: 'Cara Penggunaan', link: '/calculator/carapenggunaan.html' },
+      { title: 'Calculator Aritmatika', link: '/calculator/cal_aritmatika.html' },
+      { title: 'Calculator Geometri', link: '/calculator/cal_geometri.html' },
+      { title: 'About Us', link: '/about-us/about.html' },
+    ];
+
+    function searchFunction() {
+        const input = document.getElementById('search-input').value.toLowerCase();
+        const results = document.getElementById('search-results');
+        results.innerHTML = '';
+        if (input) {
+            const filteredItems = searchItems.filter(item => item.title.toLowerCase().includes(input));
+            filteredItems.forEach(item => {
+                const listItem = document.createElement('a');
+                listItem.href = item.link;
+                listItem.textContent = item.title;
+                listItem.className = 'list-group-item list-group-item-action';
+                results.appendChild(listItem);
+            });
+            results.style.display = 'block';
+        } else {
+            results.style.display = 'none';
+        }
+    }
+
+    document.addEventListener('click', function (event) {
+        const results = document.getElementById('search-results');
+        if (!results.contains(event.target) && event.target.id !== 'search-input') {
+            results.style.display = 'none';
+        }
+    });
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
